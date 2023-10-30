@@ -9,14 +9,35 @@ class Tweet {
 
 	//returns either 'live_event', 'achievement', 'completed_event', or 'miscellaneous'
     get source():string {
-        //TODO: identify whether the source is a live event, an achievement, a completed event, or miscellaneous.
-        return "unknown";
+        let upper = this.text.toUpperCase();
+        if(upper.includes('JUST COMPLETED') || upper.includes('JUST POSTED'))
+        {
+            return "COMPLETED";
+        }
+        else if (upper.includes('RIGHT NOW')) 
+        {
+            return "LIVE";
+        }
+        else if (upper.includes('SET A GOAL') || upper.includes('MET MY') || upper.includes('ACHIEVED'))
+        {
+            return "ACHIEVE";
+        }
+        else
+        {
+            return "MISC"
+        }
     }
 
     //returns a boolean, whether the text includes any content written by the person tweeting.
     get written():boolean {
-        //TODO: identify whether the tweet is written
-        return false;
+        if(this.text.includes(' - '))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     get writtenText():string {
