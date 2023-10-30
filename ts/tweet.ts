@@ -1,11 +1,15 @@
 class Tweet {
 	private text:string;
 	time:Date;
+    whichday:string;
 
 	constructor(tweet_text:string, tweet_time:string) {
         this.text = tweet_text;
 		this.time = new Date(tweet_time);//, "ddd MMM D HH:mm:ss Z YYYY"
+        this.whichday = tweet_time;
 	}
+
+    
 
 	//returns either 'live_event', 'achievement', 'completed_event', or 'miscellaneous'
     get source():string {
@@ -49,18 +53,110 @@ class Tweet {
     }
 
     get activityType():string {
-        if (this.source != 'completed_event') {
+        if (this.source != 'COMPLETED') {
             return "unknown";
         }
         //TODO: parse the activity type from the text of the tweet
+        let upper = this.text.toUpperCase();
+        if(upper.includes(' RUN '))
+        {  
+            if(!upper.includes(' SKI '))
+            {
+                return "running"; 
+            }
+            else if(upper.includes(' SKI RUN '))
+            {
+                return "skiing";
+            }
+        }
+        else if(upper.includes(' BIKE '))
+        {           
+            return "biking"; 
+        }
+        else if(upper.includes(' CHAIR RIDE '))
+        {
+            return "chair riding";
+        }
+        else if(upper.includes(' FREESTYLE '))
+        {
+            return "freestyle";
+        }
+        else if(upper.includes(' HIKE '))
+        {
+            return "hiking";
+        }
+        else if(upper.includes(' KM ACTIVITY ') || upper.includes(' MI ACTIVITY '))
+        {
+            return "activity";
+        }
+        else if(upper.includes(' WALK '))
+        {
+            return "walking";
+        }
+        else if(upper.includes(' WORKOUT '))
+        {
+            return "workout";
+        }
+        else if(upper.includes(' SWIM '))
+        {
+            return "swimming";
+        }
+        else if(upper.includes(' YOGA '))
+        {
+            return "yoga";
+        }
+       
+
         return "";
     }
 
     get distance():number {
-        if(this.source != 'completed_event') {
+        if(this.source != 'COMPLETED') {
             return 0;
         }
         //TODO: prase the distance from the text of the tweet
+
+        let distString: string ="";
+        let distArray;
+        if(this.text.includes(' mi '))
+        {
+            distArray = this.text.match(/(?<= a )(.*?)(?= mi )/);
+            if(distArray != null)
+            {
+                distArray.forEach(element =>
+                {
+                    if(element != null)
+                    {
+                        distString += element.toString();
+                    }
+                });
+            }
+            let mi = parseFloat(distString);
+            let miString: string = mi.toFixed(2);
+            let miRet = parseFloat(miString);
+            return miRet;
+        }
+        else if (this.text.includes(' km '))
+        {
+            distArray = this.text.match(/(?<=a )(.*?)(?= km )/);
+            if(distArray != null)
+            {
+                distArray.forEach(element =>
+                {
+                    if(element != null)
+                    {
+                        distString += element.toString();
+                    }
+                });
+            }
+
+            let km = parseFloat(distString);
+            let mi = km/1.609;
+            let miString: string = mi.toFixed(2);
+            let miRet = parseFloat(miString);
+            return miRet;
+        }
+
         return 0;
     }
 
