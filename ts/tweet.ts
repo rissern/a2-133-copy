@@ -83,7 +83,9 @@ class Tweet {
             return "";
         }
         //TODO: parse the written text from the tweet
-        return "";
+        let written = this.text.substring(this.text.indexOf(' - '),
+        this.text.indexOf('https'));
+        return written;
     }
 
     get activityType():string {
@@ -194,8 +196,36 @@ class Tweet {
         return 0;
     }
 
-    getHTMLTableRow(rowNumber:number):string {
+    get getLink():string
+    {
+        let link1 = "https:";
+        let link2;
+        let linkString:string = "";
+        link2 = this.text.match(/(?<= https:)(.*?)(?= )/);
+        if(link2!=null){
+            link2.forEach(element=> {
+                linkString=element.toString();
+            });
+        }
+        link1 = link1 + linkString;
+        return link1;
+    }
+
+    getHTMLTableRow(rowNumber:number, ele:any):string 
+    {
+        //Function handled in descriptions.js
+        
         //TODO: return a table row which summarizes the tweet with a clickable link to the RunKeeper activity
-        return "<tr></tr>";
+
+        //let htmlText = "<tr>";
+        //let tweetNum = "<td>" + rowNumber + "</td>"; 
+        //htmlText += tweetNum;
+        //let activityType = "<td>" + ele.activityType + "</td>"; 
+        //htmlText += activityType;
+        //let tweet = "<td>"+ ele.tweet + "</td>"; 
+        //htmlText += tweet;
+        //htmlText += "</tr>"
+
+        return " ";
     }
 }
