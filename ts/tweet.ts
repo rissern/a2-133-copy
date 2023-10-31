@@ -9,7 +9,41 @@ class Tweet {
         this.whichday = tweet_time;
 	}
 
-    
+    get getDay():string {
+        if(this.whichday.includes('Sun '))
+        {
+            return "Sun";
+        }
+        else if(this.whichday.includes('Mon '))
+        {
+            return "Mon";
+        }
+        else if(this.whichday.includes('Tue '))
+        {
+            return "Tue";
+        }
+        else if(this.whichday.includes('Wed '))
+        {
+            return "Wed";
+        }
+        else if(this.whichday.includes('Thu '))
+        {
+            return "Thu";
+        }
+        else if(this.whichday.includes('Fri '))
+        {
+            return "Fri";
+        }
+        else if(this.whichday.includes('Sat'))
+        {
+            return "Sat";
+        }
+        else
+        {
+            return " ";
+        }
+
+    }
 
 	//returns either 'live_event', 'achievement', 'completed_event', or 'miscellaneous'
     get source():string {

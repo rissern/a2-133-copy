@@ -95,6 +95,7 @@ function parseTweets(runkeeper_tweets) {
 			activity: key
 		}
 		);
+
 		console.log(key);
 		console.log(activityMap[key]);
 	}
@@ -208,15 +209,127 @@ function parseTweets(runkeeper_tweets) {
 		$('#weekdayOrWeekendLonger').text('weekdays');
 	}
 
-	activity_vis_spec = {
-	  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-	  "description": "A graph of the number of Tweets containing each type of activity.",
-	  "data": {
-	    "values": tweet_array
-	  }
-	  //TODO: Add mark and encoding
+
+	let daysArray = [];
+	console.log('tweet_array.length: ' + tweet_array.length);
+	tweet_array.forEach(element =>
+	{
+		if((element.activityType===first) || (element.activityType===second) || (element.activityType===third))
+		{
+			daysArray.push
+			({
+				day: element.getDay,
+				activity: element.activityType,
+				distance: element.distance
+			});
+		}
+	});
+
+	console.log('daysArray');
+	console.log(daysArray);
+	console.log("\t");
+
+
+	activity_vis_spec =
+	{
+		"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+		"description": "A graph of the number of Tweets containing each type of activity.",
+		"width": 450,
+		"height": 450,
+		"data":
+		{
+			"values": activityArray
+	  	},
+		"mark": "bar",
+		"encoding":
+		{
+			"x": {"field": "count", "type": "quantitative", "axis": {"title": "amount"}},
+			"y": {"field": "activity", "type": "ordinal"},
+			"color": {"value": "#4A412A"}
+		}
 	};
 	vegaEmbed('#activityVis', activity_vis_spec, {actions:false});
+
+	distance_vis_spec =
+	{
+		"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+		"description": "A graph that plots the distances for each day of the week.",
+		"width": 450,
+		"height": 450, 
+	  	"data":
+		{
+			"values": daysArray
+		},
+		"mark": "tick",
+		"encoding":
+		{
+			"x":{"field": "distance", "type": "quantitative"},
+			"y":
+			{
+				"field": "day",
+				"type": "ordinal",
+				"sort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+				"axis": {"title": "day"}
+			},
+			"color":
+			{
+				"field": "activity",
+				"type": "nominal",
+				"scale":
+				{
+					"domain": [activitySorted[activitySorted.length - 1].activity,
+					activitySorted[activitySorted.length - 2].activity,
+					activitySorted[activitySorted.length - 3].activity],
+					"range": ["red", "green", "blue"]
+				},
+				"legend": {"title": "activities"}
+			}
+		}
+	};
+	vegaEmbed('#distanceVis', distance_vis_spec, {actions:false});
+
+	distance_vis_aggregated =
+	{
+		"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+		"description": "A graph that plots the average distances for each day of the week.",
+		"width": 450,
+		"height": 450, 
+	  	"data":
+	  	{
+			"values": daysArray
+		},
+		"mark": "point",
+		"encoding":
+		{
+			"x":
+			{
+				"field": "distance",
+				"aggregate": "average",
+				"type": "quantitative",
+				"axis": {"title": "average"}
+			},
+			"y":
+			{
+				"field": "day",
+				"type": "ordinal",
+				"sort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+				"axis": {"title": "day"}
+			},
+			"color":
+			{
+				"field": "activity",
+				"type": "nominal",
+				"scale": {
+					"domain": [activitySorted[activitySorted.length - 1].activity,
+					activitySorted[activitySorted.length - 2].activity,
+					activitySorted[activitySorted.length - 3].activity],
+					"range": ["red", "green", "blue"]
+				},
+				"legend": {"title": "activities"}
+			}
+		}
+	};
+	vegaEmbed('#distanceVisAggregated', distance_vis_aggregated, {actions:false});
 
 	//TODO: create the visualizations which group the three most-tweeted activities by the day of the week.
 	//Use those visualizations to answer the questions about which activities tended to be longest and when.
@@ -225,4 +338,22 @@ function parseTweets(runkeeper_tweets) {
 //Wait for the DOM to load
 document.addEventListener('DOMContentLoaded', function (event) {
 	loadSavedRunkeeperTweets().then(parseTweets);
+
+	$("#distanceVisAggregated").hide();
+	$("#aggregate").click(function(event)
+	{
+		var elem = $(event.target);
+		if (elem.text()=="Show all activities")
+		{
+			elem.text("Show means");
+			$("#distanceVis").show();
+			$("#distanceVisAggregated").hide();
+		}
+		else if (elem.text()=="Show means")
+		{
+			elem.text("Show all activities");
+			$("#distanceVis").hide();
+			$("#distanceVisAggregated").show();
+		}
+	});
 });
